@@ -59,8 +59,15 @@ class _MyHomePageState extends State<MyHomePage> {
 
     final newNode = ARKitNode(
         geometry: ARKitSphere(radius: 0.25),
-        position: vector.Vector3(0, 0, -1.0));
+        position: vector.Vector3(0, 0, -1.5));
 
     arKitController.add(newNode);
+
+    final modelNode = ARKitReferenceNode(
+        url: 'models.scnassets/dash.dae',
+        position: vector.Vector3(0, 0, -1.0),
+        scale: vector.Vector3.all(0.3));
+
+    arKitController.add(modelNode);
   }
 }
