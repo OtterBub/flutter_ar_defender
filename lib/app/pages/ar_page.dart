@@ -3,7 +3,7 @@ import 'package:arkit_plugin/arkit_plugin.dart';
 import 'package:vector_math/vector_math_64.dart' as vector;
 import 'package:collection/collection.dart';
 
-import '../../src/gameframe.dart';
+import '../../src/arframe.dart';
 
 class ARPage extends StatefulWidget {
   const ARPage({super.key, required this.title});
@@ -16,10 +16,11 @@ class ARPage extends StatefulWidget {
 
 class _ARPageState extends State<ARPage> {
   late ARKitController arKitController;
-  GameFrame gameFrame = GameFrame();
+  ARFrame gameFrame = ARFrame();
 
   @override
   void dispose() {
+    arKitController.updateAtTime = null;
     arKitController.dispose();
     super.dispose();
   }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import './pages/ar_page.dart';
+import './pages/home_page.dart';
 
 class MainApp extends StatelessWidget {
   const MainApp({super.key});
@@ -11,7 +12,8 @@ class MainApp extends StatelessWidget {
     return MaterialApp(
       title: 'AR Defender Project',
       theme: ThemeData(),
-      home: const ARPage(title: 'AR Defender'),
+      // home: const ARPage(title: 'AR Defender'),
+      home: const HomePage(title: 'Home Page',),
     );
   }
 }

@@ -1,7 +1,7 @@
 import 'package:arkit_plugin/arkit_plugin.dart';
 import 'package:vector_math/vector_math_64.dart';
 
-class GameObject {
+class ARObject {
   ARKitNode? node;
 
   void setNode(ARKitNode node) {

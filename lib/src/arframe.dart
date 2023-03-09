@@ -2,9 +2,13 @@ import 'package:arkit_plugin/arkit_plugin.dart';
 import 'package:vector_math/vector_math_64.dart';
 import 'package:collection/collection.dart';
 
-class GameFrame {
+class ARFrame {
   Map<String, ARKitNode> objectMap = <String, ARKitNode>{};
   late ARKitController arKitController;
+
+  void dispose() {
+    objectMap.clear();
+  }
 
   void init(ARKitController controller) {
     arKitController = controller;
@@ -45,5 +49,10 @@ class GameFrame {
 
     movingNode!.transform.setTranslation(position);
     arKitController.update(movingNode!.name, node: movingNode);
+  }
+
+  void addNode(ARKitNode node) {
+    objectMap.addAll({node.name: node});
+    arKitController.add(node);
   }
 }
