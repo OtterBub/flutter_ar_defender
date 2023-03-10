@@ -12,6 +12,12 @@ class ARFrame {
 
   void init(ARKitController controller) {
     arKitController = controller;
+
+    // final newNode = ARKitNode(
+    //     geometry: ARKitSphere(radius: 0.25),
+    //     position: vector.Vector3(0, 0, -1.5));
+
+    // arKitController.add(newNode);
   }
 
   void run() {}
@@ -53,6 +59,8 @@ class ARFrame {
 
   void addNode(ARKitNode node) {
     objectMap.addAll({node.name: node});
+    node.transform.setTranslation(movingNode!.transform.getTranslation());
+    node.transform.rotateY(90);
     arKitController.add(node);
   }
 }

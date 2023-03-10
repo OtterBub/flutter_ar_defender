@@ -16,7 +16,7 @@ class ARPage extends StatefulWidget {
 
 class _ARPageState extends State<ARPage> {
   late ARKitController arKitController;
-  ARFrame gameFrame = ARFrame();
+  ARFrame arFrame = ARFrame();
 
   @override
   void dispose() {
@@ -40,7 +40,15 @@ class _ARPageState extends State<ARPage> {
       body: ARKitSceneView(
           showFeaturePoints: true, onARKitViewCreated: onARKitViewCreated),
       floatingActionButton: FloatingActionButton(
-        onPressed: _addObject,
+        onPressed: () {
+          final modelNode = ARKitReferenceNode(
+              url:
+                  'models.scnassets/generator/Emergency_Backup_Generator-(COLLADA_3 (COLLAborative Design Activity)).dae',
+              position: vector.Vector3(0, 0, -1.0),
+              scale: vector.Vector3.all(0.1)
+              );
+          arFrame.addNode(modelNode);
+        },
         tooltip: 'AddObject',
         child: const Icon(Icons.add),
       ),
@@ -51,21 +59,8 @@ class _ARPageState extends State<ARPage> {
     arKitController = controller;
     arKitController.addCoachingOverlay(CoachingOverlayGoal.horizontalPlane);
 
-    gameFrame.init(controller);
+    arFrame.init(controller);
 
-    arKitController.updateAtTime = (time) => gameFrame.update(time);
-
-    final newNode = ARKitNode(
-        geometry: ARKitSphere(radius: 0.25),
-        position: vector.Vector3(0, 0, -1.5));
-
-    arKitController.add(newNode);
-
-    final modelNode = ARKitReferenceNode(
-        url: 'models.scnassets/dash.dae',
-        position: vector.Vector3(0, 0, -1.0),
-        scale: vector.Vector3.all(0.3));
-
-    arKitController.add(modelNode);
+    arKitController.updateAtTime = (time) => arFrame.update(time);
   }
 }
