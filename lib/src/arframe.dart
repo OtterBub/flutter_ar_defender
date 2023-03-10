@@ -5,6 +5,7 @@ import 'package:collection/collection.dart';
 class ARFrame {
   Map<String, ARKitNode> objectMap = <String, ARKitNode>{};
   late ARKitController arKitController;
+  bool firstPositioning = false;
 
   void dispose() {
     objectMap.clear();
@@ -18,6 +19,12 @@ class ARFrame {
     //     position: vector.Vector3(0, 0, -1.5));
 
     // arKitController.add(newNode);
+    movingNode = ARKitReferenceNode(
+        url:
+            'models.scnassets/generator/Emergency_Backup_Generator-(COLLADA_3 (COLLAborative Design Activity)).dae',
+        position: Vector3(0, 0, -1.0),
+        scale: Vector3.all(0.1));
+    arKitController.add(movingNode!);
   }
 
   void run() {}
@@ -27,11 +34,6 @@ class ARFrame {
   void update(double time) {
     if (busyUpdate) return;
     busyUpdate = true;
-
-    if (movingNode == null) {
-      movingNode = ARKitNode(geometry: ARKitSphere(radius: 0.05));
-      arKitController.add(movingNode!);
-    }
 
     arKitController.performHitTest(x: 0.5, y: 0.7).then(_arHitResult);
 
@@ -55,6 +57,18 @@ class ARFrame {
 
     movingNode!.transform.setTranslation(position);
     arKitController.update(movingNode!.name, node: movingNode);
+  }
+
+  void pressedAddBtn() {
+    if (firstPositioning == false) {
+      // addNode(movingNode!);
+      // arKitController.remove(movingNode!.name);
+
+      movingNode = ARKitNode(geometry: ARKitSphere(radius: 0.05));
+      arKitController.add(movingNode!);
+
+      firstPositioning = false;
+    }
   }
 
   void addNode(ARKitNode node) {

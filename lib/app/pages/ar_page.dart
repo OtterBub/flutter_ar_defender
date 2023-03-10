@@ -41,13 +41,7 @@ class _ARPageState extends State<ARPage> {
           showFeaturePoints: true, onARKitViewCreated: onARKitViewCreated),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          final modelNode = ARKitReferenceNode(
-              url:
-                  'models.scnassets/generator/Emergency_Backup_Generator-(COLLADA_3 (COLLAborative Design Activity)).dae',
-              position: vector.Vector3(0, 0, -1.0),
-              scale: vector.Vector3.all(0.1)
-              );
-          arFrame.addNode(modelNode);
+          arFrame.pressedAddBtn();
         },
         tooltip: 'AddObject',
         child: const Icon(Icons.add),
