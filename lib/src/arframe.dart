@@ -1,5 +1,6 @@
 import 'package:arkit_plugin/arkit_plugin.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:vector_math/vector_math_64.dart';
 import 'package:collection/collection.dart';
 
@@ -9,7 +10,9 @@ class ARFrame {
   bool firstPositioning = false;
   bool positionHeight = false;
   double zNodePosition = -0.5;
+  double yNodePosition = 0;
   Vector3 cameraDirect = Vector3(0, 0, 0);
+  Vector3 hitTestTranslate = Vector3(0, 0, 0);
 
   void dispose() {
     objectMap.clear();
@@ -45,6 +48,12 @@ class ARFrame {
     );
     arKitController.performHitTest(x: 0.5, y: 0.7).then(_arHitResult);
 
+    Vector3 position = hitTestTranslate + (cameraDirect * zNodePosition);
+    position.y = position.y + yNodePosition;
+
+    movingNode!.transform.setTranslation(position);
+    arKitController.update(movingNode!.name, node: movingNode);
+
     busyUpdate = false;
   }
 
@@ -57,24 +66,18 @@ class ARFrame {
 
     if (point == null) return;
 
-    Vector3 position = Vector3(
+    hitTestTranslate = Vector3(
       point.worldTransform.getColumn(3).x,
       point.worldTransform.getColumn(3).y,
       point.worldTransform.getColumn(3).z,
     );
-
-    position = position + (cameraDirect * zNodePosition);
-
-    movingNode!.transform.setTranslation(position);
-    Matrix4 nodeTrans = movingNode!.transform;
-    arKitController.update(movingNode!.name, node: movingNode);
   }
 
   void pressedAddBtn(String btnName) {
     if (btnName.compareTo("add") == 0) {
       if (firstPositioning == false) {
         movingNode = ARKitReferenceNode(
-            url: 'models.scnassets/arrow.dae', scale: Vector3.all(1));
+            url: 'models.scnassets/arrow_skpark.dae', scale: Vector3.all(0.1));
 
         addNode(movingNode!);
 
@@ -93,12 +96,22 @@ class ARFrame {
 
   void onVerticalDragUpdate(DragUpdateDetails details) {
     const positionSpeed = 0.01;
-    if (details.delta.direction > 0) {
-      // down
-      zNodePosition += details.delta.distance * positionSpeed;
+    if (positionHeight) {
+      if (details.delta.direction > 0) {
+        // down
+        yNodePosition -= details.delta.distance * positionSpeed;
+      } else {
+        // up
+        yNodePosition += details.delta.distance * positionSpeed;
+      }
     } else {
-      // up
-      zNodePosition -= details.delta.distance * positionSpeed;
+      if (details.delta.direction > 0) {
+        // down
+        zNodePosition += details.delta.distance * positionSpeed;
+      } else {
+        // up
+        zNodePosition -= details.delta.distance * positionSpeed;
+      }
     }
   }
 
