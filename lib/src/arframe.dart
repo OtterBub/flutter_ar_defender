@@ -13,6 +13,10 @@ class ARFrame {
   double yNodePosition = 0;
   Vector3 cameraDirect = Vector3(0, 0, 0);
   Vector3 hitTestTranslate = Vector3(0, 0, 0);
+  bool busyUpdate = false;
+  ARKitNode? movingNode;
+  ARKitNode? heightNode;
+  ARKitNode? textNode;
 
   void dispose() {
     objectMap.clear();
@@ -28,12 +32,19 @@ class ARFrame {
         position: Vector3(0, 0, -1.0),
         scale: Vector3.all(0.1));
     addNode(movingNode!);
+
+    heightNode = ARKitNode(
+        geometry: ARKitLine(
+            fromVector: Vector3(0, 0, 0), toVector: Vector3(0, 0, 0)));
+
+    addNode(heightNode!);
+
+    textNode = ARKitNode(geometry: ARKitText(text: "test", extrusionDepth: 1));
+    addNode(textNode!);
   }
 
   void run() {}
 
-  bool busyUpdate = false;
-  ARKitNode? movingNode;
   void update(double time) {
     if (busyUpdate) return;
     busyUpdate = true;
@@ -50,6 +61,29 @@ class ARFrame {
 
     Vector3 position = hitTestTranslate + (cameraDirect * zNodePosition);
     position.y = position.y + yNodePosition;
+
+    Vector3 groundPosition = Vector3(position.x, position.y, position.z);
+    groundPosition.y = hitTestTranslate.y;
+
+    final geoLine = ARKitLine(fromVector: groundPosition, toVector: position);
+    arKitController.remove(heightNode!.name);
+    heightNode = ARKitNode(geometry: geoLine);
+    arKitController.add(heightNode!);
+
+    final geoText = ARKitText(
+        text:
+            "${(groundPosition.distanceTo(position) * 100).toStringAsFixed(2)} cm",
+        extrusionDepth: 1);
+    arKitController.remove(textNode!.name);
+    textNode = ARKitNode(
+        scale: Vector3.all(0.008),
+        geometry: geoText,
+        position: Vector3(
+          (position.x + groundPosition.x) / 2,
+          (position.y + groundPosition.y) / 2,
+          (position.z + groundPosition.z) / 2,
+        ));
+    arKitController.add(textNode!);
 
     movingNode!.transform.setTranslation(position);
     arKitController.update(movingNode!.name, node: movingNode);
@@ -81,7 +115,17 @@ class ARFrame {
 
         addNode(movingNode!);
 
-        firstPositioning = false;
+        textNode = ARKitNode();
+        heightNode = ARKitNode();
+
+        firstPositioning = true;
+      } else {
+        movingNode = ARKitReferenceNode(
+            url: 'models.scnassets/arrow_skpark.dae', scale: Vector3.all(0.1));
+
+        addNode(movingNode!);
+        textNode = ARKitNode();
+        heightNode = ARKitNode();
       }
     } else if (btnName.compareTo("height") == 0) {
       positionHeight = !positionHeight;
