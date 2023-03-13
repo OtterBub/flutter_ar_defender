@@ -1,4 +1,5 @@
 import 'package:arkit_plugin/arkit_plugin.dart';
+import 'package:flutter/material.dart';
 import 'package:vector_math/vector_math_64.dart';
 import 'package:collection/collection.dart';
 
@@ -6,6 +7,9 @@ class ARFrame {
   Map<String, ARKitNode> objectMap = <String, ARKitNode>{};
   late ARKitController arKitController;
   bool firstPositioning = false;
+  bool positionHeight = false;
+  double zNodePosition = -0.5;
+  Vector3 cameraDirect = Vector3(0, 0, 0);
 
   void dispose() {
     objectMap.clear();
@@ -14,17 +18,13 @@ class ARFrame {
   void init(ARKitController controller) {
     arKitController = controller;
 
-    // final newNode = ARKitNode(
-    //     geometry: ARKitSphere(radius: 0.25),
-    //     position: vector.Vector3(0, 0, -1.5));
-
-    // arKitController.add(newNode);
     movingNode = ARKitReferenceNode(
+        name: "main object",
         url:
             'models.scnassets/generator/Emergency_Backup_Generator-(COLLADA_3 (COLLAborative Design Activity)).dae',
         position: Vector3(0, 0, -1.0),
         scale: Vector3.all(0.1));
-    arKitController.add(movingNode!);
+    addNode(movingNode!);
   }
 
   void run() {}
@@ -35,6 +35,14 @@ class ARFrame {
     if (busyUpdate) return;
     busyUpdate = true;
 
+    arKitController.pointOfViewTransform().then(
+      (value) {
+        Vector3 rotateForward = value!.forward;
+        rotateForward.y = 0;
+        rotateForward.normalize();
+        cameraDirect = rotateForward;
+      },
+    );
     arKitController.performHitTest(x: 0.5, y: 0.7).then(_arHitResult);
 
     busyUpdate = false;
@@ -49,32 +57,59 @@ class ARFrame {
 
     if (point == null) return;
 
-    final position = Vector3(
+    Vector3 position = Vector3(
       point.worldTransform.getColumn(3).x,
       point.worldTransform.getColumn(3).y,
       point.worldTransform.getColumn(3).z,
     );
 
+    position = position + (cameraDirect * zNodePosition);
+
     movingNode!.transform.setTranslation(position);
+    Matrix4 nodeTrans = movingNode!.transform;
     arKitController.update(movingNode!.name, node: movingNode);
   }
 
-  void pressedAddBtn() {
-    if (firstPositioning == false) {
-      // addNode(movingNode!);
-      // arKitController.remove(movingNode!.name);
+  void pressedAddBtn(String btnName) {
+    if (btnName.compareTo("add") == 0) {
+      if (firstPositioning == false) {
+        movingNode = ARKitReferenceNode(
+            url: 'models.scnassets/arrow.dae', scale: Vector3.all(1));
 
-      movingNode = ARKitNode(geometry: ARKitSphere(radius: 0.05));
-      arKitController.add(movingNode!);
+        addNode(movingNode!);
 
-      firstPositioning = false;
+        firstPositioning = false;
+      }
+    } else if (btnName.compareTo("height") == 0) {
+      positionHeight = !positionHeight;
     }
   }
 
   void addNode(ARKitNode node) {
     objectMap.addAll({node.name: node});
     node.transform.setTranslation(movingNode!.transform.getTranslation());
-    node.transform.rotateY(90);
     arKitController.add(node);
+  }
+
+  void onVerticalDragUpdate(DragUpdateDetails details) {
+    const positionSpeed = 0.01;
+    if (details.delta.direction > 0) {
+      // down
+      zNodePosition += details.delta.distance * positionSpeed;
+    } else {
+      // up
+      zNodePosition -= details.delta.distance * positionSpeed;
+    }
+  }
+
+  void onHorizontalDragUpdate(DragUpdateDetails details) {
+    const rotateSpeed = 0.01;
+    if (details.delta.direction > 0) {
+      // left
+      movingNode!.transform.rotateY(-details.delta.distance * rotateSpeed);
+    } else {
+      // right
+      movingNode!.transform.rotateY(details.delta.distance * rotateSpeed);
+    }
   }
 }

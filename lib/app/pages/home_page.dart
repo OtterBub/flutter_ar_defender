@@ -37,10 +37,9 @@ class MenuBar extends StatelessWidget {
               FloatingActionButton.extended(
                   heroTag: "AR Start btn",
                   onPressed: () {
-                    Navigator.of(context).push<void>(
-                        MaterialPageRoute(
-                          builder: (context) => const ARPage(title: "title"),
-                        ));
+                    Navigator.of(context).push<void>(MaterialPageRoute(
+                      builder: (context) => const ARPage(title: "AR Page"),
+                    ));
                   },
                   label: const Text("AR Start"),
                   backgroundColor: Colors.transparent),

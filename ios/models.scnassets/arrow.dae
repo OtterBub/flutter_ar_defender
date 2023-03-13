@@ -36,7 +36,7 @@
               <color sid="transparent">1.000000  1.000000 1.000000 1.000000</color>
             </transparent>
             <transparency>
-              <float sid="transparency">0.900000</float>
+              <float sid="transparency">0.100000</float>
             </transparency>
           </phong>
         </technique>
@@ -211,28 +211,6 @@
       </mesh>
     </geometry>
   </library_geometries>
-  <library_lights>
-    <light id="top_light-light" name="top_light-light">
-      <technique_common>
-        <directional>
-          <color sid="color">1.000000 1.000000 1.000000</color>
-        </directional>
-      </technique_common>
-      <technique profile="MAYA">
-        <intensity sid="intensity">1.000000</intensity>
-      </technique>
-    </light>
-    <light id="bottom_light-light" name="bottom_light-light">
-      <technique_common>
-        <directional>
-          <color sid="color">1.000000 1.000000 1.000000</color>
-        </directional>
-      </technique_common>
-      <technique profile="MAYA">
-        <intensity sid="intensity">0.300000</intensity>
-      </technique>
-    </light>
-  </library_lights>
   <library_visual_scenes>
     <visual_scene id="Arrow" name="Arrow">
       <node name="arrow_root" id="arrow_root" sid="arrow_root"><matrix sid="matrix">0.010000 0.000000 0.000000 0.000000 0.000000 0.010000 0.000000 0.000000 0.000000 0.000000 0.010000 0.000000 0.000000 0.000000 0.000000 1.000000</matrix><extra><technique profile="FCOLLADA"><visibility>1.000000</visibility></technique></extra><node name="arrow_model" id="arrow_model" sid="arrow_model"><matrix sid="matrix">10.000000 0.000000 0.000000 0.000000 0.000000 0.000000 -10.000000 0.000000 0.000000 10.000000 0.000000 0.000000 0.000000 0.000000 0.000000 1.000000</matrix><instance_geometry url="#arrow_model-lib"><bind_material><technique_common><instance_material symbol="arrow_material" target="#arrow_material"/></technique_common></bind_material></instance_geometry><extra><technique profile="FCOLLADA"><visibility>1.000000</visibility></technique></extra></node></node>

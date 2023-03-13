@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import './pages/ar_page.dart';
 import './pages/home_page.dart';
 
 class MainApp extends StatelessWidget {
@@ -13,7 +12,7 @@ class MainApp extends StatelessWidget {
       title: 'AR Defender Project',
       theme: ThemeData(),
       // home: const ARPage(title: 'AR Defender'),
-      home: const HomePage(title: 'Home Page',),
+      home: const HomePage(title: 'Title Page',),
     );
   }
 }

@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:arkit_plugin/arkit_plugin.dart';
-import 'package:vector_math/vector_math_64.dart' as vector;
-import 'package:collection/collection.dart';
 
 import '../../src/arframe.dart';
 
@@ -25,36 +23,58 @@ class _ARPageState extends State<ARPage> {
     super.dispose();
   }
 
-  void _addObject() {
-    setState(() {
-      // Add Object
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    final buildWidget = Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
       ),
       body: ARKitSceneView(
           showFeaturePoints: true, onARKitViewCreated: onARKitViewCreated),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          arFrame.pressedAddBtn();
-        },
-        tooltip: 'AddObject',
-        child: const Icon(Icons.add),
+      floatingActionButton: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          FloatingActionButton(
+            heroTag: "heightObject",
+            onPressed: () {
+              // change icon
+              setState(
+                () {
+                  arFrame.pressedAddBtn("height");
+                },
+              );
+            },
+            tooltip: 'heightObject',
+            child: Icon(
+                arFrame.positionHeight ? Icons.arrow_upward : Icons.height),
+          ),
+          FloatingActionButton(
+            heroTag: "AddObject",
+            onPressed: () {
+              arFrame.pressedAddBtn("add");
+            },
+            tooltip: 'addObject',
+            child: const Icon(Icons.add),
+          )
+        ],
       ),
+    );
+    return GestureDetector(
+      child: buildWidget,
+      onVerticalDragUpdate: (details) {
+        arFrame.onVerticalDragUpdate(details);
+      },
+      onHorizontalDragUpdate: (details) {
+        arFrame.onHorizontalDragUpdate(details);
+      },
     );
   }
 
   void onARKitViewCreated(ARKitController controller) {
     arKitController = controller;
-    arKitController.addCoachingOverlay(CoachingOverlayGoal.horizontalPlane);
-
     arFrame.init(controller);
 
+    arKitController.addCoachingOverlay(CoachingOverlayGoal.horizontalPlane);
     arKitController.updateAtTime = (time) => arFrame.update(time);
   }
 }
